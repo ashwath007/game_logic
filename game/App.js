@@ -1,18 +1,20 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
   TouchableOpacity
 
 } from 'react-native';
-
+import Icons from "./components/Icons"
+import Snackbar from "react-native-snackbar"
 import {
   Text,
   Container,
   Content,
   Header,
   Body,
+  Title,
   Card,
   H1, H3,
   Button
@@ -21,13 +23,139 @@ import {
 
 
 
-const App = () => {
-  return (
-    <>
-      <View>
 
-      </View>
-    </>
+
+const App = () => {
+  const [isCross,setIsCross] = useState(false);
+const [winMessage,setWinMessage] = useState('');
+
+
+const itemArray = new Array(9).fill('empty')
+
+
+
+const changeItem = (itemNum) => {
+        if(winMessage){
+          return Snackbar.show({
+            text: winMessage,
+            backgroundColor: '#000',
+            textColor:"#FFF"
+          })
+        }
+        if(itemArray[itemNum] === 'empty'){
+          itemArray[itemNum] = isCross ? 'cross' : 'circle'
+          setIsCross(!isCross)  
+        }
+        else{
+          return Snackbar.show({
+            text:'This is already filled'
+          })
+        }
+        checkWinner
+
+}
+
+const reloadGame = () => {
+    setWinMessage('')
+    setIsCross(false)
+    itemArray.fill('empty',0,9)
+} 
+
+const checkWinner = () => {
+  if(
+    itemArray[0] === itemArray[1] && itemArray[1] === itemArray[2] && itemArray[0] !=='empty'
+  ){
+    setWinMessage(`${itemArray[0]} Won`)
+  }
+  if(
+    itemArray[3] === itemArray[4] && itemArray[4] === itemArray[5] && itemArray[0] !=='empty'
+  ){
+    setWinMessage(`${itemArray[3]} Won`)
+  }
+  if(
+    itemArray[6] === itemArray[7] && itemArray[7] === itemArray[8] && itemArray[0] !=='empty'
+  ){
+    setWinMessage(`${itemArray[6]} Won`)
+  }
+  if(
+    itemArray[0] === itemArray[3] && itemArray[3] === itemArray[6] && itemArray[0] !=='empty'
+  ){
+    setWinMessage(`${itemArray[0]} Won`)
+  }
+  if(
+    itemArray[1] === itemArray[4] && itemArray[4] === itemArray[7] && itemArray[0] !=='empty'
+  ){
+    setWinMessage(`${itemArray[1]} Won`)
+  }
+  if(
+    itemArray[2] === itemArray[5] && itemArray[5] === itemArray[8] && itemArray[0] !=='empty'
+  ){
+    setWinMessage(`${itemArray[2]} Won`)
+  }
+  if(
+    itemArray[0] === itemArray[4] && itemArray[4] === itemArray[8] && itemArray[0] !=='empty'
+  ){
+    setWinMessage(`${itemArray[0]} Won`)
+  }
+  if(
+    itemArray[2] === itemArray[4] && itemArray[4] === itemArray[6] && itemArray[0] !=='empty'
+  ){
+    setWinMessage(`${itemArray[2]} Won`)
+  }
+
+}
+  return (
+   
+      <Container style={{backgroundColor: "#333945", padding: 5}}>
+        
+        <Header>
+          <Body>
+          <Title>
+            Game On
+          </Title>
+          </Body>
+        </Header>
+        <Content>
+          <View style={styles.grid}>
+          {itemArray.map((item,i)=>{
+            return(
+                <TouchableOpacity style={styles.box} key={i} onPress={()=>{changeItem(i)}}>
+                    <Card style={styles.card}>
+                      <Icons name={item}/>
+                    </Card>
+                </TouchableOpacity>
+            )
+          })
+
+          }
+
+          </View>
+          {winMessage ? (
+            <View>
+                <H1 style={styles.message}>{winMessage}</H1>
+                <Button>
+                  <Text onPress={reloadGame}
+                    primary
+                    block
+                    rounded
+                  >
+                    Reload
+                  </Text>
+                </Button>
+            </View>
+          ):(
+            <H3 style={styles.message}>
+              {
+               isCross ? 'Cross ':'Circle ' 
+              }
+              turn
+            </H3>
+          )}
+         
+
+        </Content>
+      </Container>
+    
   );
 };
 
